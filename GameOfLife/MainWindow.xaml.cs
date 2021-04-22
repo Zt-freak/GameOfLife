@@ -34,8 +34,8 @@ namespace GameOfLife
             InitializeComponent();
 
             Grid myGrid = new Grid();
-            myGrid.Width = 400;
-            myGrid.Height = 400;
+            myGrid.Width = 800;
+            myGrid.Height = 800;
             myGrid.ShowGridLines = false;
 
             Button tempButton;
@@ -98,16 +98,49 @@ namespace GameOfLife
                     {
                         for (int l = -1; l <= 1; l++)
                         {
+
+
+
+
+                            // TEST
+
+                            // here it works
+                            //tempMatrix[4, 4] = new Button();
+                            //tempMatrix[4, 4].Background = Brushes.White;
+
+                            if (i == 4 && j == 4)
+                            {
+                                // here it doesn't
+                                tempMatrix[4, 4] = new Button();
+                                tempMatrix[4, 4].Background = Brushes.White;
+
+                                tempMatrix[i + k, j + l] = new Button();
+                                tempMatrix[i + k, j + l].Background = Brushes.Green;
+                                if (i + k == i || j + l == j)
+                                {
+                                    tempMatrix[i + k, j + l].Background = Brushes.Blue;
+                                }
+                                
+                            }
+
+
+
+
                             if (i + k > -1 && i + k < Size && j + l > -1 && j + l < Size)
                             {
+                                
                                 if (SpaceMatrix[i + k, j + l].Background == Brushes.Red)
                                 {
+                                    
                                     livingNeighboursCount++;
                                 }
                             }
                         }
                     }
-                    tempMatrix[i, j] = new Button();
+                    if (tempMatrix[i, j] == null)
+                    {
+                        tempMatrix[i, j] = new Button();
+                    }
                     if (SpaceMatrix[i, j].Background == Brushes.Red && (livingNeighboursCount == 2 || livingNeighboursCount == 3))
                     {
                         tempMatrix[i, j].Background = Brushes.Red;
@@ -128,6 +161,7 @@ namespace GameOfLife
                 for (int j = 0; j < Size; j++)
                 {
                     SpaceMatrix[i, j].Background = tempMatrix[i, j].Background;
+                    SpaceMatrix[i, j].Content = $"{i},{j}";
                 }
             }
         }
