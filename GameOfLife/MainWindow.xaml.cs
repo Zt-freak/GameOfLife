@@ -27,15 +27,15 @@ namespace GameOfLife
         public MainWindow()
         {
             LifeTimer = new DispatcherTimer();
-            LifeTimer.Interval = TimeSpan.FromSeconds(0.5);
+            LifeTimer.Interval = TimeSpan.FromSeconds(0.2);
             LifeTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             Size = 20;
             SpaceMatrix = new Button[Size, Size];
             InitializeComponent();
 
             Grid myGrid = new Grid();
-            myGrid.Width = 800;
-            myGrid.Height = 800;
+            myGrid.Width = 500;
+            myGrid.Height = 500;
             myGrid.ShowGridLines = false;
 
             Button tempButton;
@@ -48,6 +48,11 @@ namespace GameOfLife
                     tempButton = new Button();
                     tempButton.Background = Brushes.LightGray;
                     tempButton.Click += new RoutedEventHandler(Space_Click);
+                    
+                    // For testing
+                    //tempButton.Content = $"{i},{j}";
+                    //tempButton.FontSize = 8;
+
                     Grid.SetColumnSpan(tempButton, 1);
                     Grid.SetRow(tempButton, i);
                     Grid.SetColumn(tempButton, j);
@@ -93,75 +98,61 @@ namespace GameOfLife
             {
                 for (int j = 0; j < Size; j++)
                 {
-                    livingNeighboursCount = 0;
-                    for (int k = -1; k <= 1; k++)
+                    tempMatrix[i, j] = new Button();
+                    livingNeighboursCount = DetermineLivingNeighbours(tempMatrix, i, j);
+                    FillAndCompareSpace(SpaceMatrix[i, j], tempMatrix[i, j], livingNeighboursCount);
+                }
+            }
+            FillMatrix(SpaceMatrix, tempMatrix);
+            
+        }
+
+        private int DetermineLivingNeighbours(Button[,] matrix, int xCoord, int yCoord)
+        {
+            int livingNeighboursCount = 0;
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (xCoord + i > -1 && xCoord + i < Size && yCoord + j > -1 && yCoord + j < Size)
                     {
-                        for (int l = -1; l <= 1; l++)
+
+                        if (SpaceMatrix[xCoord + i, yCoord + j].Background == Brushes.Red && SpaceMatrix[xCoord + i, yCoord + j] != SpaceMatrix[xCoord, yCoord])
                         {
-
-
-
-
-                            // TEST
-
-                            // here it works
-                            //tempMatrix[4, 4] = new Button();
-                            //tempMatrix[4, 4].Background = Brushes.White;
-
-                            if (i == 4 && j == 4)
-                            {
-                                // here it doesn't
-                                tempMatrix[4, 4] = new Button();
-                                tempMatrix[4, 4].Background = Brushes.White;
-
-                                tempMatrix[i + k, j + l] = new Button();
-                                tempMatrix[i + k, j + l].Background = Brushes.Green;
-                                if (i + k == i || j + l == j)
-                                {
-                                    tempMatrix[i + k, j + l].Background = Brushes.Blue;
-                                }
-                                
-                            }
-
-
-
-
-                            if (i + k > -1 && i + k < Size && j + l > -1 && j + l < Size)
-                            {
-                                
-                                if (SpaceMatrix[i + k, j + l].Background == Brushes.Red)
-                                {
-                                    
-                                    livingNeighboursCount++;
-                                }
-                            }
+                            livingNeighboursCount++;
                         }
-                    }
-                    if (tempMatrix[i, j] == null)
-                    {
-                        tempMatrix[i, j] = new Button();
-                    }
-                    if (SpaceMatrix[i, j].Background == Brushes.Red && (livingNeighboursCount == 2 || livingNeighboursCount == 3))
-                    {
-                        tempMatrix[i, j].Background = Brushes.Red;
-                    }
-                    else if (SpaceMatrix[i, j].Background == Brushes.LightGray && livingNeighboursCount == 3)
-                    {
-                        tempMatrix[i, j].Background = Brushes.Red;
-                    }
-                    else
-                    {
-                        tempMatrix[i, j].Background = Brushes.LightGray;
                     }
                 }
             }
+            return livingNeighboursCount;
+        }
 
+        private void FillAndCompareSpace(Button originalSpace, Button newSpace, int livingNeighboursCount)
+        {
+            newSpace.Content = livingNeighboursCount;
+
+            if (originalSpace.Background == Brushes.Red && livingNeighboursCount == 2 || originalSpace.Background == Brushes.Red && livingNeighboursCount == 3)
+            {
+                newSpace.Background = Brushes.Red;
+            }
+            else if (originalSpace.Background == Brushes.LightGray && livingNeighboursCount == 3)
+            {
+                newSpace.Background = Brushes.Red;
+            }
+            else
+            {
+                newSpace.Background = Brushes.LightGray;
+            }
+        }
+
+        private void FillMatrix(Button[,] originalMatrix, Button[,] tempMatrix)
+        {
             for (int i = 0; i < Size; i++)
             {
                 for (int j = 0; j < Size; j++)
                 {
-                    SpaceMatrix[i, j].Background = tempMatrix[i, j].Background;
-                    SpaceMatrix[i, j].Content = $"{i},{j}";
+                    originalMatrix[i, j].Background = tempMatrix[i, j].Background;
+                    //originalMatrix[i, j].Content = tempMatrix[i, j].Content;
                 }
             }
         }
